@@ -64,6 +64,7 @@ Other scripts:
 ```bash
 npm run build         # production build (.next)
 npm run build:static  # static export to out/, for CDN-only hosts
+npm run build:pages   # static export configured for GitHub Pages
 npm run start         # serve the production build
 npm run typecheck     # tsc --noEmit
 ```
@@ -90,6 +91,38 @@ so Vercel will treat it as Production and redeploy on every push to it.
 Every page is statically prerendered, so the site is served from the CDN edge and
 comfortably fits the Vercel Hobby (free) tier.
 
+### Deploying to GitHub Pages
+
+A workflow is already committed at `.github/workflows/deploy-pages.yml`. To turn it on:
+
+1. In the repository, go to **Settings → Pages**.
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Push to the default branch (or run the workflow manually from the **Actions** tab).
+
+The site lands at `https://<your-username>.github.io/basic-python-programming-repo/`.
+
+Three details the workflow handles for you, each of which silently breaks a naive
+Next.js deployment to Pages:
+
+- **Subpath.** A project site is served from `/<repo>/`, not `/`, so `basePath` and
+  `assetPrefix` must carry that prefix. The workflow reads it from
+  `actions/configure-pages`, so nothing hardcodes the repository name — rename the
+  repo and it keeps working.
+- **Jekyll.** Pages runs Jekyll by default, and Jekyll ignores any directory starting
+  with an underscore — which is every JavaScript and CSS file Next emits, under
+  `_next/`. A `.nojekyll` file switches that off.
+- **Extensionless URLs.** `trailingSlash: true` makes the export write
+  `topic/lists/index.html` instead of `topic/lists.html`, so deep links and hard
+  reloads resolve on a plain file server.
+
+To preview the exact Pages build locally:
+
+```bash
+npm run build:pages    # writes out/ with basePath=/basic-python-programming-repo
+```
+
+Then serve `out/` from a directory of that name, so paths line up with the real site.
+
 ### Deploying anywhere else
 
 Because nothing runs on a server, the app can also be exported to plain files:
@@ -98,7 +131,7 @@ Because nothing runs on a server, the app can also be exported to plain files:
 npm run build:static   # writes out/
 ```
 
-Point any static host (Render, Netlify, Cloudflare Pages, GitHub Pages, S3) at the
+Point any static host (Render, Netlify, Cloudflare Pages, S3) at the
 `out/` directory. On Render, choose **Static Site**, build command `npm run build:static`,
 publish directory `out`.
 

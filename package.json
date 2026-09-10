@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "build:static": "STATIC_EXPORT=1 next build"
+    "build:static": "STATIC_EXPORT=1 next build",
+    "build:pages": "STATIC_EXPORT=1 BASE_PATH=/basic-python-programming-repo next build"
   },
   "repository": {
     "type": "git",
