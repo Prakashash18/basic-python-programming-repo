@@ -62,25 +62,45 @@ npm run dev      # http://localhost:3000
 Other scripts:
 
 ```bash
-npm run build      # production build
-npm run start      # serve the production build
-npm run typecheck  # tsc --noEmit
+npm run build         # production build (.next)
+npm run build:static  # static export to out/, for CDN-only hosts
+npm run start         # serve the production build
+npm run typecheck     # tsc --noEmit
 ```
 
 ## Deploying to Vercel
 
-The project is a stock Next.js App Router app, so Vercel needs no configuration:
+The project is a stock Next.js App Router app, so Vercel needs no configuration.
 
-1. Push this branch to GitHub.
-2. In Vercel, **Add New… → Project** and import the repository.
-3. Leave the framework preset as **Next.js**; build command `npm run build`, output `.next`.
-4. Deploy.
+1. Go to [vercel.com/new](https://vercel.com/new) and sign in with GitHub.
+2. Import `basic-python-programming-repo`. If Vercel cannot see it, click
+   **Adjust GitHub App Permissions** and grant access to the repo.
+3. Vercel detects **Next.js** and fills in the build settings. Leave them alone:
+   - Framework preset: `Next.js`
+   - Build command: `npm run build`
+   - Output directory: `.next`
+   - Install command: `npm install`
+4. No environment variables are required. Optionally add `NEXT_PUBLIC_SITE_URL`
+   set to your final domain, so `sitemap.xml` and `robots.txt` carry absolute URLs.
+5. Click **Deploy**. The first build takes roughly two minutes.
 
-Optionally set `NEXT_PUBLIC_SITE_URL` to your final domain so `sitemap.xml` and `robots.txt`
-carry absolute URLs.
+The repository's default branch is `claude/interactive-teaching-platform-j2oe9d`,
+so Vercel will treat it as Production and redeploy on every push to it.
 
-Every page is statically prerendered, so the site is served from the CDN edge and costs nothing
-to keep online.
+Every page is statically prerendered, so the site is served from the CDN edge and
+comfortably fits the Vercel Hobby (free) tier.
+
+### Deploying anywhere else
+
+Because nothing runs on a server, the app can also be exported to plain files:
+
+```bash
+npm run build:static   # writes out/
+```
+
+Point any static host (Render, Netlify, Cloudflare Pages, GitHub Pages, S3) at the
+`out/` directory. On Render, choose **Static Site**, build command `npm run build:static`,
+publish directory `out`.
 
 ## How the Python runtime works
 
