@@ -31,13 +31,16 @@ jobs:
 
       # Derives base_path ("/<repo>" for a project site, "" for a user site or
       # custom domain) so nothing here hardcodes the repository name.
+      # Derives base_path ("/<repo>" for a project site, "" for a user site or
+      # custom domain) so nothing here hardcodes the repository name.
+      #
+      # This step fails until Pages is switched on once, by hand, under
+      # Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+      # `enablement: true` cannot do it for you: creating a Pages site needs
+      # repo-admin rights, which the default GITHUB_TOKEN does not have.
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
-        with:
-          # Turns Pages on (source: GitHub Actions) the first time this runs,
-          # so no one has to visit Settings -> Pages by hand.
-          enablement: true
 
       - run: npm ci
 
