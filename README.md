@@ -93,13 +93,17 @@ comfortably fits the Vercel Hobby (free) tier.
 
 ### Deploying to GitHub Pages
 
-A workflow is already committed at `.github/workflows/deploy-pages.yml`. To turn it on:
+A workflow is already committed at `.github/workflows/deploy-pages.yml`, and it runs on
+every push to the default branch. The first run enables Pages itself
+(`configure-pages` is set to `enablement: true`), so there is nothing to click.
 
-1. In the repository, go to **Settings → Pages**.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Push to the default branch (or run the workflow manually from the **Actions** tab).
+The site lands at
+`https://<your-username>.github.io/basic-python-programming-repo/`, and the URL is
+also printed on the **deploy** job in the **Actions** tab.
 
-The site lands at `https://<your-username>.github.io/basic-python-programming-repo/`.
+If your organisation blocks Actions from enabling Pages, do it once by hand
+instead: **Settings → Pages → Build and deployment → Source: GitHub Actions**,
+then re-run the workflow.
 
 Three details the workflow handles for you, each of which silently breaks a naive
 Next.js deployment to Pages:

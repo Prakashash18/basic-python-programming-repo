@@ -34,6 +34,10 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          # Turns Pages on (source: GitHub Actions) the first time this runs,
+          # so no one has to visit Settings -> Pages by hand.
+          enablement: true
 
       - run: npm ci
 
