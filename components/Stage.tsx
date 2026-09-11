@@ -18,6 +18,11 @@ import {
 import type { Topic } from "@/lib/curriculum/types";
 import { topicSlides } from "@/lib/curriculum";
 import { useProgress } from "@/lib/progress";
+import { XP, slideCount, slidesSeenIn, solvedIn, isCleared } from "@/lib/gamification";
+import MissionRail from "./hud/MissionRail";
+import CompactRail from "./hud/CompactRail";
+import Telemetry from "./hud/Telemetry";
+import { awardToast } from "./hud/XpToast";
 import CardView from "./CardView";
 
 const accentBar: Record<Topic["accent"], string> = {
@@ -44,7 +49,8 @@ export default function Stage({ topic, nextTopic }: { topic: Topic; nextTopic?: 
   const [present, setPresent] = useState(false);
   const [outline, setOutline] = useState(false);
   const [scale, setScale] = useState(1);
-  const { recordSlide } = useProgress();
+  const { recordSlide, progress, hydrated } = useProgress();
+  const awardedTo = useRef<number | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
   const current = slides[index];
@@ -56,8 +62,20 @@ export default function Stage({ topic, nextTopic }: { topic: Topic; nextTopic?: 
   );
 
   useEffect(() => {
+    // Award once per slide the student has never reached before — the stored
+    // furthest index is the source of truth, so a re-read earns nothing.
+    if (hydrated) {
+      if (awardedTo.current === null) awardedTo.current = progress.slides[topic.slug] ?? -1;
+      if (index > awardedTo.current) {
+        awardedTo.current = index;
+        awardToast(XP.step);
+      }
+    }
     recordSlide(topic.slug, index);
-  }, [index, topic.slug, recordSlide]);
+    // `progress` is read through a ref-guarded branch; re-running on every
+    // progress write would re-award.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, topic.slug, recordSlide, hydrated]);
 
   // Keep the slide in view when advancing, so the teacher never has to scroll.
   useEffect(() => {
@@ -72,6 +90,7 @@ export default function Stage({ topic, nextTopic }: { topic: Topic; nextTopic?: 
   // Restore reading position within a topic
   useEffect(() => {
     setIndex(0);
+    awardedTo.current = null;
   }, [topic.slug]);
 
   const toggleFullscreen = useCallback(async () => {
@@ -147,6 +166,16 @@ export default function Stage({ topic, nextTopic }: { topic: Topic; nextTopic?: 
     return () => window.removeEventListener("keydown", onKey);
   }, [go, total, toggleFullscreen]);
 
+  const seenInTopic = Math.max(hydrated ? slidesSeenIn(progress, topic) : 0, index + 1);
+
+  const nextConceptTitle = topic.concepts[current.conceptIndex + 1]?.title ?? nextTopic?.title;
+
+  const xpToClear = hydrated
+    ? (slideCount(topic) - slidesSeenIn(progress, topic)) * XP.step +
+      (topic.practice.length - solvedIn(progress, topic)) * XP.question +
+      (isCleared(progress, topic) ? 0 : XP.topicClear)
+    : slideCount(topic) * XP.step + topic.practice.length * XP.question + XP.topicClear;
+
   const conceptStarts = new Map<number, number>();
   slides.forEach((s, i) => {
     if (!conceptStarts.has(s.conceptIndex)) conceptStarts.set(s.conceptIndex, i);
@@ -156,7 +185,7 @@ export default function Stage({ topic, nextTopic }: { topic: Topic; nextTopic?: 
     <div
       ref={stageRef}
       className={`stage scroll-mt-20 ${present ? "fixed inset-0 z-50 overflow-auto bg-ink-950" : ""}`}
-      style={{ ["--stage-scale" as string]: present ? String(scale * 1.28) : String(scale) }}
+      style={{ ["--stage-scale" as string]: present ? String(scale * 1.45) : String(scale) }}
     >
       <div className={present ? "mx-auto max-w-[1500px] px-6 py-6" : ""}>
         {/* Top bar */}
@@ -236,19 +265,55 @@ export default function Stage({ topic, nextTopic }: { topic: Topic; nextTopic?: 
           })}
         </div>
 
-        {/* Slide */}
-        <div className="min-h-[52vh]">
-          <AnimatePresence mode="wait">
-            <motion.section
-              key={index}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <CardView card={current.card} />
-            </motion.section>
-          </AnimatePresence>
+        {!present ? (
+          <div className="mb-6">
+            <CompactRail
+              topic={topic}
+              conceptIndex={current.conceptIndex}
+              percent={Math.round((seenInTopic / total) * 100)}
+              slidesSeen={seenInTopic}
+              totalSlides={total}
+              xpToClear={xpToClear}
+            />
+          </div>
+        ) : null}
+
+        {/* Stage — rails flank the slide on a laptop, fold into the strip above
+            below xl, and disappear in present mode where the room only needs
+            the content. */}
+        <div className={present ? "" : "grid gap-6 xl:grid-cols-[16rem_minmax(0,1fr)_18rem]"}>
+          {!present ? (
+            <aside className="hidden xl:flex xl:flex-col">
+              <MissionRail
+                topic={topic}
+                conceptIndex={current.conceptIndex}
+                percent={Math.round((seenInTopic / total) * 100)}
+                slidesSeen={seenInTopic}
+                totalSlides={total}
+                xpToClear={xpToClear}
+              />
+            </aside>
+          ) : null}
+
+          <div className="min-h-[52vh] min-w-0">
+            <AnimatePresence mode="wait">
+              <motion.section
+                key={index}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <CardView card={current.card} />
+              </motion.section>
+            </AnimatePresence>
+          </div>
+
+          {!present ? (
+            <aside className="hidden xl:block">
+              <Telemetry topic={topic} upNext={nextConceptTitle} />
+            </aside>
+          ) : null}
         </div>
 
         {/* Bottom bar */}

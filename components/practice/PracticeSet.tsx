@@ -5,6 +5,9 @@ import { motion } from "motion/react";
 import { Filter, Trophy, RotateCcw } from "lucide-react";
 import type { Question } from "@/lib/curriculum/types";
 import { useProgress } from "@/lib/progress";
+import { answerXp, COMBO_DOUBLE_AT } from "@/lib/gamification";
+import ComboMeter from "@/components/hud/ComboMeter";
+import { awardToast } from "@/components/hud/XpToast";
 import QuestionCard from "./QuestionCard";
 
 const FILTERS = [
@@ -19,6 +22,28 @@ export default function PracticeSet({ questions }: { questions: Question[] }) {
   const { progress, hydrated, recordAnswer } = useProgress();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const [session, setSession] = useState<Record<string, boolean>>({});
+  const [combo, setCombo] = useState(0);
+  const [best, setBest] = useState(0);
+  const [earned, setEarned] = useState(0);
+
+  /** One answer: combo up and XP on a first-time solve, combo reset on a miss. */
+  const handleAnswer = (id: string, correct: boolean, alreadySolved: boolean) => {
+    recordAnswer(id, correct);
+    setSession((s) => ({ ...s, [id]: correct }));
+
+    if (!correct) {
+      setCombo(0);
+      return;
+    }
+    const next = combo + 1;
+    setCombo(next);
+    setBest((b) => Math.max(b, next));
+    if (!alreadySolved) {
+      const gained = answerXp(next);
+      setEarned((e) => e + gained);
+      awardToast(gained, next >= COMBO_DOUBLE_AT ? `combo ×${next}` : undefined);
+    }
+  };
 
   const solved = useMemo(
     () => questions.filter((q) => progress.answers[q.id]).length,
@@ -78,6 +103,8 @@ export default function PracticeSet({ questions }: { questions: Question[] }) {
         </div>
       </div>
 
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="min-w-0 space-y-4">
       {shown.length === 0 ? (
         <div className="rounded-3xl border border-mint-500/30 bg-mint-600/8 px-6 py-10 text-center">
           <p className="text-lg font-semibold text-mint-400">Everything in this filter is solved.</p>
@@ -90,25 +117,41 @@ export default function PracticeSet({ questions }: { questions: Question[] }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {shown.map((q, i) => (
+          {shown.map((q) => (
             <QuestionCard
               key={q.id}
               question={q}
               index={questions.indexOf(q)}
               alreadyCorrect={hydrated && Boolean(progress.answers[q.id])}
-              onAnswer={(id, correct) => {
-                recordAnswer(id, correct);
-                setSession((s) => ({ ...s, [id]: correct }));
-              }}
+              onAnswer={(id, correct) =>
+                handleAnswer(id, correct, hydrated && Boolean(progress.answers[id]))
+              }
             />
           ))}
         </div>
       )}
 
+        </div>
+
+        <aside className="hidden xl:block">
+          <div className="sticky top-24">
+            <ComboMeter
+              combo={combo}
+              best={best}
+              correct={Object.values(session).filter(Boolean).length}
+              attempted={Object.keys(session).length}
+              earned={earned}
+            />
+          </div>
+        </aside>
+      </div>
+
       {Object.keys(session).length > 0 ? (
-        <p className="text-center text-sm text-ink-400">
-          This session: {Object.values(session).filter(Boolean).length} correct out of{" "}
-          {Object.keys(session).length} attempted.
+        <p className="text-center text-sm text-ink-400 xl:hidden">
+          This run: {Object.values(session).filter(Boolean).length} correct out of{" "}
+          {Object.keys(session).length} attempted
+          {combo > 1 ? ` · combo ×${combo}` : ""}
+          {earned > 0 ? ` · +${earned} XP` : ""}.
         </p>
       ) : null}
     </div>

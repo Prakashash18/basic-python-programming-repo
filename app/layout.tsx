@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { PythonPreloader } from "@/components/ui/RunnableCode";
+import HudBar from "@/components/hud/HudBar";
+import XpToastHost from "@/components/hud/XpToast";
 import { BookOpen, Code2, GraduationCap, Presentation } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -40,12 +42,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="min-h-screen antialiased">
         <PythonPreloader />
+        <XpToastHost />
 
         <header className="sticky top-0 z-40 border-b border-white/8 bg-ink-950/80 backdrop-blur-xl">
           <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6">
@@ -64,13 +67,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link
                   key={href}
                   href={href}
-                  className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm text-ink-300 transition hover:bg-white/6 hover:text-white"
+                  className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm text-ink-300 transition hover:bg-white/6 hover:text-white"
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="hidden md:inline">{label}</span>
+                  <span className="hidden lg:inline">{label}</span>
                 </Link>
               ))}
             </div>
+
+            <HudBar />
           </nav>
         </header>
 

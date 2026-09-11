@@ -32,6 +32,38 @@ module. Built for two audiences at once:
 11. Iteration: The `while` Loop
 12. Functions
 
+## The HUD
+
+The student-facing layer, aimed at a 17-22 year old audience.
+
+- **Level and XP.** 15 XP for reaching a slide you have never seen, 40 for solving a
+  practice question, 240 for clearing every question in a topic. 500 XP per level.
+- **Combo.** Consecutive correct answers inside one practice run. At x5 each answer is
+  worth double. One wrong answer resets it.
+- **Streak.** Consecutive calendar days with any activity, rolling over at the student's
+  own midnight.
+- **Badges.** One per topic, earned by solving every practice question in it.
+- **Mission rail.** The topic's concepts as objectives — done, in progress, locked — driven
+  by where the deck actually is, so the rail always matches the slide on screen.
+- **Telemetry.** Accuracy, questions solved, badges earned, and the next badge in reach.
+
+Everything except the streak is **derived** from progress that was already being stored
+(slides reached, questions solved), so XP cannot be double-awarded, there is no migration,
+and clearing progress clears the score with it. See `lib/gamification.ts` to change the
+rates — they are constants at the top of the file.
+
+Motion respects `prefers-reduced-motion`: every HUD animation is disabled for viewers who
+ask for that.
+
+### Across screens
+
+| Width | What the HUD does |
+|---|---|
+| Phone (390) | Header collapses to level + streak; mission and telemetry fold into one strip with a scrollable objective chip row |
+| Tablet (834) | Same strip, full XP bar returns to the header |
+| Laptop (1280+) | Three columns: mission rail, stage, telemetry |
+| Projector (present mode) | Rails disappear, type scales to 1.45x, only the content the room needs |
+
 ## Teaching features
 
 - **Presentation mode** — press `F` for full screen. Type scales up for the back of the room.
