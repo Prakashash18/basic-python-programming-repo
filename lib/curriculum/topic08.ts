@@ -101,6 +101,7 @@ export const topic08: Topic = {
         {
           kind: "code",
           title: "The shape of an if statement",
+          template: true,
           code: `if condition:
     block_of_code      # runs only when condition is True
 
@@ -207,6 +208,7 @@ else:
         {
           kind: "code",
           title: "The syntax",
+          template: true,
           code: `if condition_1:
     block_of_code_1
 elif condition_2:
@@ -359,8 +361,13 @@ print("done")`,
       id: "t8-q2",
       kind: "mcq",
       prompt: "What must follow the condition of an if statement?",
-      choices: ["A colon :", "A semicolon ;", "Curly braces { }", "The word then"],
-      answer: 0,
+      choices: [
+        "A semicolon ;",
+        "Curly braces { }",
+        "The word then",
+        "A colon :",
+      ],
+      answer: 3,
       explain: "Python ends the header line with a colon and then indents the block beneath it.",
       difficulty: 1,
     },
@@ -385,8 +392,13 @@ else:
       id: "t8-q4",
       kind: "mcq",
       prompt: "How many else blocks may a single if..elif chain have?",
-      choices: ["At most one, and it must come last", "One per elif", "As many as you like", "Exactly two"],
-      answer: 0,
+      choices: [
+        "As many as you like",
+        "Exactly two",
+        "At most one, and it must come last",
+        "One per elif",
+      ],
+      answer: 2,
       explain: "Multiple elif blocks are allowed, but only one else block, and it always comes last.",
       difficulty: 2,
     },

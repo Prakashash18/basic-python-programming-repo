@@ -91,6 +91,12 @@ export type Card =
       annotations?: Annotation[];
       callout?: { tone: "note" | "warn" | "tip"; text: string };
       runnable?: boolean;
+      /**
+       * A syntax skeleton rather than a real program (placeholders such as
+       * `block_of_code`). Suppresses the "run this elsewhere" launchers, which
+       * would only hand the student a SyntaxError or a NameError.
+       */
+      template?: boolean;
     }
   | {
       kind: "anim";

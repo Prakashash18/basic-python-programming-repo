@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock, Keyboard, Lightbulb, Presentation, Route, Users } from "lucide-react";
+import { Clock, ExternalLink, Keyboard, Lightbulb, Presentation, Route, Users } from "lucide-react";
 import { topics, totalMinutes, courseStats } from "@/lib/curriculum";
 
 export const metadata: Metadata = {
@@ -39,6 +39,11 @@ const RHYTHM = [
     title: "4 · Set them running",
     body: "Send students to the practice page for the topic. Code questions are marked automatically, so you are free to circulate rather than checking output over shoulders.",
   },
+  {
+    Icon: ExternalLink,
+    title: "5 · Let them take the code away",
+    body: "Every snippet has a Try it on OnlineGDB button. It copies the code and opens onlinegdb.com in a new tab, so students can paste, run and tinker on a machine with nothing installed.",
+  },
 ];
 
 export default function TeachPage() {
@@ -59,7 +64,7 @@ export default function TeachPage() {
         </p>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {RHYTHM.map((r) => (
           <div key={r.title} className="rounded-3xl border border-white/10 bg-white/[0.025] p-5">
             <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-iris-500/15">

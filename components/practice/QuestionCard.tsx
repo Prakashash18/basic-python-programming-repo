@@ -126,7 +126,9 @@ export default function QuestionCard({
 
       {question.kind === "mcq" ? (
         <div className="space-y-3">
-          {question.code ? <CodeBlock code={question.code} title="program.py" /> : null}
+          {question.code ? (
+            <CodeBlock code={question.code} title="program.py" tryOnline={state !== "open"} />
+          ) : null}
           <div className="grid gap-2">
             {question.choices.map((c, i) => {
               const picked = choice === i;
@@ -175,7 +177,7 @@ export default function QuestionCard({
 
       {question.kind === "predict" ? (
         <div className="space-y-3">
-          <CodeBlock code={question.code} title="program.py" />
+          <CodeBlock code={question.code} title="program.py" tryOnline={state !== "open"} />
           <div>
             <label className="mb-1.5 block font-mono text-[0.72em] uppercase tracking-wider text-ink-400">
               Type exactly what the console will show
@@ -336,6 +338,7 @@ export default function QuestionCard({
                 }
                 title={question.kind === "predict" ? "expected output" : "one correct solution"}
                 showLineNumbers={question.kind !== "predict"}
+                tryOnline={question.kind !== "predict"}
               />
             </div>
           </motion.div>

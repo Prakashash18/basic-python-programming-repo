@@ -42,11 +42,20 @@ module. Built for two audiences at once:
   highlighted.
 - **Check-understanding slides** — every concept ends with a question to ask the room, with the
   answer hidden until you reveal it.
+- **Take the code away.** Every snippet carries a *Try it on OnlineGDB* button that copies
+  the code and opens [onlinegdb.com](https://www.onlinegdb.com/online_python_compiler) in a
+  new tab, for machines with no Python installed. OnlineGDB has no URL parameter for
+  pre-filling the editor, so the code travels via the clipboard and the student pastes it.
+  Syntax skeletons (cards flagged `template: true`) deliberately have no button — pasting
+  `for <variable> in <sequence>:` would only produce a SyntaxError.
 - **Teacher guide** at `/teach` — lesson plans, pacing, objectives and controls for every topic.
 
 ## Practice features
 
 - Four question types, marked instantly with an explanation either way.
+- Correct answers are spread across all four options. Multiple-choice questions are
+  authored answer-first for readability, then rotated by a script, so a student cannot
+  score by always picking A.
 - Write-the-code questions run in a real CPython interpreter (Pyodide/WebAssembly) and are
   checked against the expected output, including `input()` handled from supplied test values.
 - Progress is stored in `localStorage` — nothing is uploaded and no account is needed.

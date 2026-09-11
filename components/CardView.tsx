@@ -10,6 +10,7 @@ import Callout from "./ui/Callout";
 import TracePlayer from "./ui/TracePlayer";
 import FlowPlayer from "./ui/FlowPlayer";
 import RunnableCode from "./ui/RunnableCode";
+import TryOnline from "./ui/TryOnline";
 import Animation from "./anim";
 
 function Heading({ title, lead }: { title: string; lead?: string }) {
@@ -139,10 +140,25 @@ export default function CardView({ card }: { card: Card }) {
           {card.runnable ? (
             <RunnableCode initial={card.code} fallbackOutput={card.output} />
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2">
-              <CodeBlock code={card.code} annotations={card.annotations} title="program.py" />
-              {card.output ? <Console text={card.output} label="Output" /> : null}
-            </div>
+            <>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <CodeBlock
+                  code={card.code}
+                  annotations={card.annotations}
+                  title="program.py"
+                  tryOnline={!card.template}
+                />
+                {card.output ? <Console text={card.output} label="Output" /> : null}
+              </div>
+              {!card.template ? (
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <TryOnline code={card.code} variant="button" />
+                  <span className="text-[0.85em] text-ink-400">
+                    Opens the OnlineGDB Python compiler with this code on your clipboard — paste and run.
+                  </span>
+                </div>
+              ) : null}
+            </>
           )}
           {card.runnable && card.annotations?.length ? (
             <div className="mt-4 flex flex-wrap gap-2">

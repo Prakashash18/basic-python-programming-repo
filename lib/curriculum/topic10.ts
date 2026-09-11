@@ -81,6 +81,7 @@ export const topic10: Topic = {
         {
           kind: "code",
           title: "The shape",
+          template: true,
           code: `for <variable> in <sequence>:
     # body_of_loop that has set of
     # statements which requires
@@ -287,8 +288,13 @@ i = 10 : 10 20 30 40 50 60 70 80 90 100 `,
       id: "t10-q2",
       kind: "mcq",
       prompt: "What does range(5, 9) generate?",
-      choices: ["5, 6, 7, 8", "5, 6, 7, 8, 9", "0, 1, 2, 3, 4", "5, 9"],
-      answer: 0,
+      choices: [
+        "5, 9",
+        "5, 6, 7, 8",
+        "5, 6, 7, 8, 9",
+        "0, 1, 2, 3, 4",
+      ],
+      answer: 1,
       explain: "range(start, stop) runs from start up to stop-1. The stop value is always excluded.",
       difficulty: 1,
     },
@@ -321,8 +327,13 @@ print(sum)`,
       code: `for a in range(3):
     for b in range(4):
         print(a, b)`,
-      choices: ["12", "7", "3", "4"],
-      answer: 0,
+      choices: [
+        "3",
+        "4",
+        "12",
+        "7",
+      ],
+      answer: 2,
       explain: "The inner loop runs completely for each outer pass: 3 × 4 = 12.",
       difficulty: 2,
     },

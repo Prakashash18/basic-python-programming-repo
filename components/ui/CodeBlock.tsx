@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { tokenizePython, tokenColor } from "@/lib/highlight";
 import type { Annotation } from "@/lib/curriculum/types";
+import TryOnline from "./TryOnline";
 
 const toneRing: Record<NonNullable<Annotation["tone"]>, string> = {
   iris: "border-iris-500/70 bg-iris-500/10",
@@ -39,6 +40,7 @@ export default function CodeBlock({
   title,
   className = "",
   dense = false,
+  tryOnline = true,
 }: {
   code: string;
   annotations?: Annotation[];
@@ -47,19 +49,27 @@ export default function CodeBlock({
   title?: string;
   className?: string;
   dense?: boolean;
+  /** Show the "Try it on OnlineGDB" launcher. Off for non-Python listings. */
+  tryOnline?: boolean;
 }) {
   const lines = code.replace(/\n$/, "").split("\n");
   const annByLine = new Map<number, Annotation>();
   annotations.forEach((a) => annByLine.set(a.line, a));
 
   return (
-    <div className={`overflow-hidden rounded-2xl border border-white/10 bg-ink-950/80 ${className}`}>
+    <div className={`group/code relative overflow-hidden rounded-2xl border border-white/10 bg-ink-950/80 ${className}`}>
+      {!title && tryOnline ? (
+        <div className="absolute right-2 top-2 z-10 opacity-70 transition group-hover/code:opacity-100">
+          <TryOnline code={code} />
+        </div>
+      ) : null}
       {title ? (
         <div className="flex items-center gap-2 border-b border-white/10 bg-white/[0.03] px-4 py-2">
           <span className="h-2.5 w-2.5 rounded-full bg-rose-ember/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-sun-500/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-mint-500/70" />
-          <span className="ml-2 font-mono text-[0.72em] text-ink-300">{title}</span>
+          <span className="ml-2 truncate font-mono text-[0.72em] text-ink-300">{title}</span>
+          {tryOnline ? <TryOnline code={code} className="ml-auto" /> : null}
         </div>
       ) : null}
       <div className={dense ? "py-2" : "py-3.5"}>

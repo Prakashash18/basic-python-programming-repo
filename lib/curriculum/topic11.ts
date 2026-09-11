@@ -78,6 +78,7 @@ export const topic11: Topic = {
         {
           kind: "code",
           title: "The shape",
+          template: true,
           code: `while condition:
     # body of the whole loop statements`,
           annotations: [
@@ -260,12 +261,12 @@ while num < 10:
       kind: "mcq",
       prompt: "When is the condition of a while loop checked?",
       choices: [
-        "Before every pass, including the first",
-        "Only after the body has run once",
         "Only at the very start",
         "After every statement inside the body",
+        "Before every pass, including the first",
+        "Only after the body has run once",
       ],
-      answer: 0,
+      answer: 2,
       explain: "The condition is tested first. If it is False from the outset, the body never runs at all.",
       difficulty: 2,
     },

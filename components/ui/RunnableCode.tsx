@@ -5,6 +5,7 @@ import { Play, Loader2, RotateCcw, CircleAlert } from "lucide-react";
 import { CodeLine } from "./CodeBlock";
 import Console from "./Console";
 import { loadPython, onPhase, runPython, type LoadPhase } from "@/lib/python-runner";
+import TryOnline from "./TryOnline";
 
 export function usePythonPhase() {
   const [phase, setPhase] = useState<LoadPhase>("idle");
@@ -99,6 +100,7 @@ export default function RunnableCode({
             >
               <RotateCcw className="h-3 w-3" /> Reset
             </button>
+            <TryOnline code={() => code} />
             <button
               onClick={run}
               disabled={busy}
